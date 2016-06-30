@@ -1,0 +1,65 @@
+{
+  "variables": {
+    "cpus": "2",
+    "memory": "2048",
+    "disk_size": "8192"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "RedHat_64",
+      "iso_url": "http://ftp.riken.jp/Linux/centos/7/isos/x86_64/CentOS-7-x86_64-Minimal-1511.iso",
+      "iso_checksum": "88c0437f0a14c6e2c94426df9d43cd67",
+      "iso_checksum_type": "md5",
+      "output_directory": "output-laptop-k8s",
+      "vm_name": "virtualbox-laptop-k8s",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "10m",
+      "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now",
+      "guest_additions_mode": "upload",
+      "guest_additions_path": "VBoxGuestAdditions.iso",
+      "virtualbox_version_file": ".vbox_version",
+      "headless": true,
+      "disk_size": "{{user `disk_size`}}",
+      "vboxmanage": [
+         ["modifyvm", "{{.Name}}", "--memory", "{{user `memory`}}"],
+         ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"]
+      ],
+      "http_directory": "./http",
+      "boot_wait": "10s",
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-ks.cfg<enter><wait>"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "./provisioners",
+      "destination": "/tmp/"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "mv /tmp/provisioners /var/provisioners",
+        "cd /var/provisioners",
+        "sh init.sh",
+        "sh docker/install.sh",
+        "sh kubernetes/yum_package/install.sh"
+      ],
+      "override": {
+        "virtualbox-iso": {
+          "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'"
+        }
+      }
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "compression_level": 6,
+      "output": "laptop-k8s.box"
+    }
+  ]
+}
