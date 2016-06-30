@@ -2,7 +2,8 @@
   "variables": {
     "cpus": "2",
     "memory": "2048",
-    "disk_size": "8192"
+    "disk_size": "8192",
+    "with": "docker"
   },
   "builders": [
     {
@@ -46,7 +47,11 @@
         "cd /var/provisioners",
         "sh init.sh",
         "sh docker/install.sh",
-        "sh kubernetes/yum_package/install.sh"
+        "if {{user `with`}} = 'docker' ; then",
+        "  sh kubernetes/docker/install.sh",
+        "else",
+        "  sh kubernetes/rpm/install.sh",
+        "fi",
       ],
       "override": {
         "virtualbox-iso": {

@@ -2,9 +2,6 @@
 
 set -ex
 
-# start docker engine
-systemctl start docker.service
-
 # If you’d like to use the current stable version of Kubernetes, run the following:
 # export K8S_VERSION=$(curl -sS https://storage.googleapis.com/kubernetes-release/release/stable.txt)
 # and for the latest available version (including unstable releases):
@@ -34,10 +31,4 @@ docker run -d \
         --cluster-domain=cluster.local \
         --allow-privileged --v=2
 
-# curl -sSL "http://storage.googleapis.com/kubernetes-release/release/${K8S_VERSION}/bin/linux/${ARCH}/kubectl" > /usr/bin/kubectl
-# chmod +x /usr/bin/kubectl
-
-# kubectl config set-cluster test-doc --server=http://localhost:8080
-# kubectl config set-context test-doc --cluster=test-doc
-# kubectl config use-context test-doc
 

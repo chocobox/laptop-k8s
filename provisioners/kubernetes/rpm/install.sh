@@ -7,7 +7,7 @@ basedir=`cd $(dirname ${0}) && pwd`
 # etcd
 yum -y install etcd
 cp ${basedir}/configs/etc/etcd/etcd.conf /etc/etcd/etcd.conf
-#systemctl enable etcd.service
+systemctl enable etcd.service
 systemctl start etcd.service
 
 # network settings for flannel
@@ -19,17 +19,25 @@ yum -y install kubernetes-master
 cp ${basedir}/configs/etc/kubernetes/config /etc/kubernetes/config
 cp ${basedir}/configs/etc/kubernetes/apiserver /etc/kubernetes/apiserver
 cp ${basedir}/configs/etc/kubernetes/controller-manager /etc/kubernetes/controller-manager
-#systemctl enable kube-apiserver.service
-#systemctl enable kube-controller-manager.service
-#systemctl enable kube-scheduler.service
+systemctl enable kube-apiserver.service
+systemctl enable kube-controller-manager.service
+systemctl enable kube-scheduler.service
 
 # node
 yum -y install kubernetes-node
 cp ${basedir}/configs/etc/kubernetes/kubelet /etc/kubernetes/kubelet
-#systemctl enable kube-proxy.service
-#systemctl enable kubelet.service
+systemctl enable kube-proxy.service
+systemctl enable kubelet.service
 
 # flannel
 yum -y install flannel
-#systemctl enable flanneld.service
+systemctl enable flanneld.service
 cp ${basedir}/configs/etc/sysconfig/flanneld /etc/sysconfig/flanneld
+
+# install commands
+
+ln -s ${basedir}/kubestart.sh /usr/bin/kubestart
+ln -s ${basedir}/kubestop.sh /usr/bin/kubestop
+
+chmod +x /usr/bin/kubestart
+chmod +x /usr/bin/kubestop
